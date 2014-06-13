@@ -1,4 +1,4 @@
-var BUTTON_TIME = 250;
+var BUTTON_TIME = 100;
 var YLOGO_PIN = 12;
 var SPITTLE_PIN_0 = 11;
 var SPITTLE_PIN_1 = 16;
@@ -138,7 +138,7 @@ var MicroDogsController = function() {
   };
   
   this.displayState = function(index) {
-    var buttonState = 0;
+    var buttonState = 1;
     var self = this;
  
     var clickButton = function(rotations) {
