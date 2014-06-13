@@ -3,7 +3,7 @@ var YLOGO_PIN = 12;
 var SPITTLE_PIN_0 = 11;
 var SPITTLE_PIN_1 = 16;
 var SPITTLE_PIN_2 = 15;
-var MENU_PIN = 16;
+var MENU_PIN = 22;
 var NAV_PIN = 18;
 
 // reference: [fail, success, running/started]
@@ -66,7 +66,7 @@ var MicroDogsController = function() {
     }
     return 0;
   }
-
+  
   this.steadyLight = function() {
     gpio.write(YLOGO_PIN, 1, function() {
       console.log('Enable pin  ' + YLOGO_PIN + ' - constant');
@@ -157,26 +157,31 @@ var MicroDogsController = function() {
 
   this.setUpScreens = function() {
     var pinQueue = [];
-    // Opens Menu
-    pinQueue.push(MENU_PIN);
-
-    /******* Disable Slideshow ********/
-    pinQueue.concat([NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);
-    
-    // Should return to menu after selecting an option
-    
-    /****** Disable Auto-shut down ********/
-    pinQueue.concat([NAV_PIN, NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);    
-
-    // Should return to menu after selecting an option
-    // and subsequently after a few seconds, to the first slide.
-    var pinQueueWorker = setInterval(function() {
-      gpio.write(pinQueue.shift(), 1, function() {
+    var unclickButton = function() {
+      gpio.write(pinQueue.shift(), 0, function() { 
         if (pinQueue.length == 0) {
           clearInterval(pinQueueWorker);
         }
       });
-    }, BUTTON_TIME);
+    };
+    // Opens Menu
+    pinQueue.push(MENU_PIN);
+
+    /******* Disable Slideshow ********/
+    pinQueue = pinQueue.concat([NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);
+    
+    // Should return to menu after selecting an option
+    
+    /****** Disable Auto-shut down ********/
+    pinQueue = pinQueue.concat([NAV_PIN, NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);    
+
+    // Should return to menu after selecting an option
+    // and subsequently after a few seconds, to the first slide.
+    var pinQueueWorker = setInterval(function() {
+      gpio.write(pinQueue[0], 1, function() {
+        setTimeout(unclickButton, BUTTON_TIME); 
+      });
+    }, BUTTON_TIME * 2);
 
   };
 
