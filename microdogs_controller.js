@@ -1,5 +1,8 @@
 var BUTTON_TIME = 250;
-var LEDS_PIN = 12;
+var YLOGO_PIN = 12;
+var SPITTLE_PIN_0 = 11;
+var SPITTLE_PIN_1 = 13;
+var SPITTLE_PIN_2 = 15;
 var MENU_PIN = 16;
 var NAV_PIN = 18;
 
@@ -28,35 +31,86 @@ openGpio();
 
 var MicroDogsController = function() {
   var interval; 
-  var lightState;
+  var spittleState = 0;
+  var flashState = 1;
 
-  this.yLogoLEDState = 1;
+  var clearIntervals = function() {
+    clearInterval(interval);
+  }
+
+  var toggleBit = function(bit) {
+    bit = 1 - bit;
+  }
+
+  var dcmp = function(a, b) {
+    if (a === b) {
+      return 1;
+    }
+    return 0;
+  }
 
   this.steadyLight = function() {
-    this.yLogoLEDState = 1;
-    gpio.write(LEDS_PIN, this.yLogoLEDState, function() {
-      console.log('Enable pin  ' + LEDS_PIN + ' - constant');
+    gpio.write(YLOGO_PIN, 1, function() {
+      console.log('Enable pin  ' + YLOGO_PIN + ' - constant');
+    });
+    gpio.write(SPITTLE_PIN_0, 1, function() {
+      console.log('Enable pin  ' + YLOGO_PIN + ' - constant');
+    });
+    gpio.write(SPITTLE_PIN_1, 1, function() {
+      console.log('Enable pin  ' + YLOGO_PIN + ' - constant');
+    });
+    gpio.write(SPITTLE_PIN_2, 1, function() {
+      console.log('Enable pin  ' + YLOGO_PIN + ' - constant');
+    });
+  
+  };
+
+  this.cycleSpittle = function() {
+    spittleState++; 
+    if (spittleState > 2) {
+      spittleState = 0;
+    } 
+    gpio.write(YLOGO_PIN, 1, function() {
+      console.log('pin ' + YLOGO_PIN + ' state - 1');
+    });
+    gpio.write(SPITTLE_PIN_0, dcmp(spittleState, 0), function() {
+      console.log('pin ' + SPITTLE_PIN_0 + ' state - ' + dcmp(spittleState, 0));
+    });
+    gpio.write(SPITTLE_PIN_1, dcmp(spittleState,1), function() {
+      console.log('pin ' + SPITTLE_PIN_1 + ' state - ' + dcmp(spittleState, 1));
+    });
+    gpio.write(SPITTLE_PIN_2, dcmp(spittleState, 2), function() {
+      console.log('pin ' + SPITTLE_PIN_2 + ' state - ' + dcmp(spittleState, 2));
     });
   };
 
-  this.flash = function() {
-    var self = this;
-    this.yLogoLEDState = !this.yLogoLEDState;
-    gpio.write(LEDS_PIN, this.yLogoLEDState, function() {
-      console.log('pin ' + LEDS_PIN + ' state - ' + self.yLogoLEDState);
+  this.failureFlash = function() {
+    flashState = toggleBit(flashState); 
+    gpio.write(YLOGO_PIN, flashState, function() {
+      console.log('pin ' + YLOGO_PIN + ' state - 1');
+    });
+    gpio.write(SPITTLE_PIN_0, flashState, function() {
+      console.log('pin ' + SPITTLE_PIN_0 + ' state - ' + flashState);
+    });
+    gpio.write(SPITTLE_PIN_1, flashState, function() {
+      console.log('pin ' + SPITTLE_PIN_1 + ' state - ' + flashState);
+    });
+    gpio.write(SPITTLE_PIN_2, flashState, function() {
+      console.log('pin ' + SPITTLE_PIN_2 + ' state - ' + flashState);
     });
   };
-
+  
   this.announceDeploy = function (deploy) {
     var self = this;
-    clearInterval(interval); 
+    clearIntervals(); 
     switch(deploy.status) {
       case "started":
-        interval = setInterval(this.flash, 500); 
+        spittleState = 0;
+        interval = setInterval(this.cycleSpittle, 500); 
         this.displayState(STARTED_INDEX);
         break;
       case "failed":
-        interval = setInterval(this.flash, 200); 
+        interval = setInterval(this.failureFlash, 200); 
         this.displayState(FAILURE_INDEX);
         break;
       default:
@@ -72,7 +126,7 @@ var MicroDogsController = function() {
     var clickButton = function(rotations) {
       if (!rotations) return;
       
-      buttonState = (buttonState == 0);
+      buttonState = toggleBit(buttonState);
       gpio.write(NAV_PIN, buttonState, function() {
         setTimeout(clickButton, BUTTON_TIME);
         rotations -= 1; 
