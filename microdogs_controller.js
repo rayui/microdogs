@@ -39,7 +39,7 @@ var MicroDogsController = function() {
   }
 
   var toggleBit = function(bit) {
-    bit = 1 - bit;
+    return bit = 1 - bit;
   }
 
   var dcmp = function(a, b) {
