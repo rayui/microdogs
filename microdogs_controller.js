@@ -1,4 +1,4 @@
-var BUTTON_TIME = 750;
+var BUTTON_TIME = 250;
 var LEDS_PIN = 12;
 var MENU_PIN = 16;
 var NAV_PIN = 18;
@@ -34,16 +34,16 @@ var MicroDogsController = function() {
 
   this.steadyLight = function() {
     this.yLogoLEDState = 1;
-    gpio.write(12, this.yLogoLEDState, function() {
-      console.log('Enable pin 12 - constant');
+    gpio.write(LEDS_PIN, this.yLogoLEDState, function() {
+      console.log('Enable pin  ' + LEDS_PIN + ' - constant');
     });
   };
 
   this.flash = function() {
     var self = this;
     this.yLogoLEDState = !this.yLogoLEDState;
-    gpio.write(12, this.yLogoLEDState, function() {
-      console.log('pin 12 state - ' + self.yLogoLEDState);
+    gpio.write(LEDS_PIN, this.yLogoLEDState, function() {
+      console.log('pin ' + LEDS_PIN + ' state - ' + self.yLogoLEDState);
     });
   };
 
@@ -59,22 +59,28 @@ var MicroDogsController = function() {
         interval = setInterval(this.flash, 200); 
         this.displayState(FAILURE_INDEX);
         break;
-      case "successful":
-        this.displayState(SUCCESS_INDEX);
-        break;
-      case "default":
+      default:
         this.steadyLight(); 
+        this.displayState(SUCCESS_INDEX);
         break; 
     }     
   };
 
   this.displayState = function(index) {
-    var rotations = Math.abs(index - CURRENT_INDEX); // how many rotations to the next image?
-    for (var i = 0; i < rotations; i++ ) {
-      gpio.write(NAV_PIN, 1, function() {
-        console.log('Rotate ' + i);
-      });
+    var buttonState = 0;
+    
+    var clickButton = function(rotations) {
+      if (!rotations) return;
+      
+      buttonState = (buttonState == 0);
+      gpio.write(NAV_PIN, buttonState, function() {
+        setTimeout(clickButton, BUTTON_TIME);
+        rotations -= 1; 
+      });       
     }
+
+    clickButton(Math.abs(index - CURRENT_INDEX) * 2);
+
   };
 
   this.setUpScreens = function() {
