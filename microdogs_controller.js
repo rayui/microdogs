@@ -1,7 +1,7 @@
 var BUTTON_TIME = 250;
 var YLOGO_PIN = 12;
 var SPITTLE_PIN_0 = 11;
-var SPITTLE_PIN_1 = 13;
+var SPITTLE_PIN_1 = 16;
 var SPITTLE_PIN_2 = 15;
 var MENU_PIN = 16;
 var NAV_PIN = 18;
@@ -20,10 +20,28 @@ var _ = require('underscore');
 var gpio = require('pi-gpio');
 
 var openGpio = function() {
-  gpio.close(12, function(err) {
+  gpio.close(YLOGO_PIN, function(err) {
     console.log('closed gpio: %s', err);
   });
-  gpio.open(12, 'output', function(err) {
+  gpio.open(YLOGO_PIN, 'output', function(err) {
+    console.log('opened gpio', err);
+  });
+  gpio.close(SPITTLE_PIN_0, function(err) {
+    console.log('closed gpio: %s', err);
+  });
+  gpio.open(SPITTLE_PIN_0, 'output', function(err) {
+    console.log('opened gpio', err);
+  });
+  gpio.close(SPITTLE_PIN_1, function(err) {
+    console.log('closed gpio: %s', err);
+  });
+  gpio.open(SPITTLE_PIN_1, 'output', function(err) {
+    console.log('opened gpio', err);
+  });
+  gpio.close(SPITTLE_PIN_2, function(err) {
+    console.log('closed gpio: %s', err);
+  });
+  gpio.open(SPITTLE_PIN_2, 'output', function(err) {
     console.log('opened gpio', err);
   });
 };
@@ -76,7 +94,7 @@ var MicroDogsController = function() {
     gpio.write(SPITTLE_PIN_0, dcmp(spittleState, 0), function() {
       console.log('pin ' + SPITTLE_PIN_0 + ' state - ' + dcmp(spittleState, 0));
     });
-    gpio.write(SPITTLE_PIN_1, dcmp(spittleState,1), function() {
+    gpio.write(SPITTLE_PIN_1, dcmp(spittleState, 1), function() {
       console.log('pin ' + SPITTLE_PIN_1 + ' state - ' + dcmp(spittleState, 1));
     });
     gpio.write(SPITTLE_PIN_2, dcmp(spittleState, 2), function() {
