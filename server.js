@@ -7,14 +7,19 @@ var express = require('express');
 var path = require('path');
 var consolidate = require('consolidate');
 var app = express();
+
+var MicroDogsPoller = require('./microdogs_poller');
+var MicroDogsController = require('./microdogs_controller').MicroDogsController;
+var microdogsController = new MicroDogsController();
+
+
 app.engine('handlebars', consolidate.handlebars);
 app.set('views', __dirname + '/site');
 app.use(express.bodyParser());
 
+
 var PORT = process.argv[3] || 80;
 console.log('PORT', PORT);
-
-var socket;
 
 app.get('/dashboard', function (req, res) {
 
@@ -34,30 +39,6 @@ app.get('/dashboard', function (req, res) {
   });
 });
 
-// TODO Start dashboard
-app.post('/toggleStart', function (req, res) {
-  console.log(req.body);
-  
-  // Just returns 200
-  res.setHeader('Content-Type', 'application/json');
-  res.end();
-});
-
-// Testing endpoint
-app.post('/deploy', function (req, res) {
-
-  if (socket) {
-    console.log(req.body);
-    socket.onDeploy({
-      status:req.body.status
-    });
-  }
-  
-  // Just returns 200
-  res.setHeader('Content-Type', 'application/json');
-  res.end();
-});
-
 function serveDir (dir) {
   app.get(dir + ':file', function (req, res) {
     var file = req.params.file;
@@ -73,30 +54,11 @@ serveDir('/assets/fonts/');
 serveDir('/assets/js/');
 serveDir('/assets/imgs/');
 
-var server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
+var server = require('http').createServer(app);
 
 server.listen(PORT);
 
-io.sockets.on('connection', function (connectedSocket) {
-  socket = connectedSocket;
-
-  var MicroDogsPoller = require('./microdogs_poller');
-  var MicroDogsController = require('./microdogs_controller').MicroDogsController;
-  var microdogsController = new MicroDogsController(socket);
-
-  socket.onDeploy = function (deploy) {
-    socket.emit('deploy', deploy);
-    microdogsController.announceDeploy(deploy);
-  };
-
-  MicroDogsPoller.start(socket.onDeploy);
-});
+MicroDogsPoller.start(microdogsController.announceDeploy);
 
 console.log('URL:');
 console.log('GET http://localhost:' + PORT + '/dashboard');
-// NOT IMPLEMENTED
-//console.log('POST http://localhost:' + PORT + '/toggleStart');
-console.log('POST http://localhost:' + PORT + '/microdogs/likes');
-console.log('POST http://localhost:' + PORT + '/microdogs/on');
-console.log('POST http://localhost:' + PORT + '/microdogs/off');

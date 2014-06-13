@@ -37,12 +37,40 @@ var getMessage = function(onPayload) {
 };
 
 // Keep track of likes so we never double count one.
-var likeRegistry = {};
 
 var isFromDeployBot = function(payload) {
-  if (payload.messages[0].sender_id === 1495663658) {
+  var latestMessage = _.toArray(payload.threaded_extended)[0][0]; 
+  if (latestMessage.sender_id == 1495663658) {
     return true;
   }
+  return false;
+}
+
+var hasSuccessReply = function(payload) {
+
+  var latestMessage = _.toArray(payload.threaded_extended)[0][0];
+  if (latestMessage.body.indexof("finished deploying workfeed_production") >= 0) {
+    return true; 
+  }
+ 
+  return false; 
+} 
+
+var hasStartedMessage = function(payload) {
+  var latestMessage = _.toArray(payload.threaded_extended)[0][0];
+  if (latestMessage.body.indexof("started deploying workfeed_production") >= 0) {
+    return true;
+  }
+  
+  return false;
+} 
+
+var hasFailedMessage = function(payload) {
+  var latestMessage = payload.threaded_Extended.toArray()[0][0];
+  if (latestMessage.body.indexof("failed deploying workfeed_production") >= 0) {
+    return true;
+  }
+ 
   return false;
 }
 
@@ -60,14 +88,12 @@ var processThread = function (onNewDeploy) {
 
     if (isFromDeployBot(payload)) {
       if (hasStartedMessage(payload)) {
-        if(!hasSuccessReply(payload) && !hasAbortedReply) {
-          onNewDeploy({status:"started"});  
-        } else if (hasSuccessReply) {
-          onNewDeploy({status:"success"});
-        } else if (hasAbortedReply) {
-          onNewDeploy({status:"aborted"});
-        } 
-      }  
+        onNewDeploy({status:"started"});  
+      } else if (hasSuccessReply(payload)) {
+        onNewDeploy({status:"successful"});
+      } else if (hasFailedReply()) {
+        onNewDeploy({status:"failed"});
+      } 
     } 
 
   });

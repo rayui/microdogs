@@ -15,11 +15,10 @@ var openGpio = function() {
 };
 openGpio();
 
-var MicroDogsController = function(socket) {
+var MicroDogsController = function() {
   var interval; 
   var lightState;
 
-  this.socket = socket;
   this.yLogoLEDState = 1;
 
   this.steadyLight = function() {
