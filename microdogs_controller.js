@@ -44,6 +44,20 @@ var openGpio = function() {
   gpio.open(SPITTLE_PIN_2, 'output', function(err) {
     console.log('opened gpio', err);
   });
+  gpio.close(MENU_PIN, function(err) {
+    console.log('closed gpio: %s', err);
+  });
+  gpio.open(MENU_PIN, 'output', function(err) {
+    console.log('opened gpio', err);
+  });
+  gpio.close(NAV_PIN, function(err) {
+    console.log('closed gpio: %s', err);
+  });
+  gpio.open(NAV_PIN, 'output', function(err) {
+    console.log('opened gpio', err);
+  });
+  gpio.write(MENU_PIN, 1, function() {});
+  gpio.write(NAV_PIN, 1, function() {});
 };
 openGpio();
 
@@ -167,7 +181,8 @@ var MicroDogsController = function() {
   this.setUpScreens = function() {
     var pinQueue = [];
     var unclickButton = function() {
-      gpio.write(pinQueue.shift(), 0, function() { 
+      gpio.write(pinQueue.shift(), 1, function() { 
+        console.log("unclicking menu");
         if (pinQueue.length == 0) {
           clearInterval(pinQueueWorker);
         }
@@ -187,7 +202,8 @@ var MicroDogsController = function() {
     // Should return to menu after selecting an option
     // and subsequently after a few seconds, to the first slide.
     var pinQueueWorker = setInterval(function() {
-      gpio.write(pinQueue[0], 1, function() {
+      gpio.write(pinQueue[0], 0, function() {
+        console.log("clicking menu " + pinQueue[0]);
         setTimeout(unclickButton, BUTTON_TIME); 
       });
     }, BUTTON_TIME * 2);

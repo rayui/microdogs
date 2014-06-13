@@ -4,6 +4,7 @@ var microdogsController = new MicroDogsController();
 state = 0;
 states = ["successful", "started", "failed"];
 
+microdogsController.setUpScreens();
 microdogsController.announceDeploy(state);
 
 setInterval(function() {
