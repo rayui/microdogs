@@ -1,5 +1,8 @@
 
 var BUTTON_TIME = 750;
+var LEDS_PIN = 12;
+var MENU_PIN = 16;
+var NAV_PIN = 18;
 var _ = require('underscore');
 var gpio = require('pi-gpio');
 
@@ -43,13 +46,57 @@ var MicroDogsController = function(socket) {
         interval = setInterval(this.flash, 200); 
         break;
       case "successful":
+
+        break;
       case "default":
         this.steadyLight(); 
         break; 
     }     
   };
 
-  
+  this.setUpScreens = function() {
+    // Opens Menu
+    gpio.write(MENU_PIN, 1, function() {
+      console.log('Open menu.');
+    });
+
+    /******* Disable Slideshow ********/
+    
+    gpio.write(NAV_PIN, 1, function() {
+      console.log('Navigate to "Slideshow" menu item.');
+    });    
+    gpio.write(MENU_PIN, 1, function() {
+      console.log('Select "Slideshow" menu item.');
+    });
+    gpio.write(NAV_PIN, 1, function() {
+      console.log('Move to "Off" option.');
+    });
+    gpio.write(MENU_PIN, 1, function() {
+      console.log('Select "Off" option.');
+    });
+
+    // Should return to menu after selecting an option
+    
+    /****** Disable Auto-shut down ********/
+    gpio.write(NAV_PIN, 1, function() {
+      console.log('Navigate next.');
+    });
+    gpio.write(NAV_PIN, 1, function() {
+      console.log('Navigate to "Auto" menu item.');
+    });    
+    gpio.write(MENU_PIN, 1, function() {
+      console.log('Select "Auto" menu item.');
+    });  
+    gpio.write(NAV_PIN, 1, function() {
+      console.log('Move to "Off" option.');
+    }); 
+    gpio.write(MENU_PIN, 1, function() {
+      console.log('Select "Off" option.');
+    });   
+
+    // Should return to menu after selecting an option
+    // and subsequently after a few seconds, to the first slide.
+  };
 
 };
 
