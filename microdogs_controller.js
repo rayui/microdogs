@@ -2,6 +2,17 @@ var BUTTON_TIME = 750;
 var LEDS_PIN = 12;
 var MENU_PIN = 16;
 var NAV_PIN = 18;
+
+// reference: [fail, success, running/started]
+// it starts on scary Sugar (index 0)
+var FAILURE_INDEX = 0;
+var SUCCESS_INDEX = 1;
+var STARTED_INDEX = 2;
+
+// current image index
+var CURRENT_INDEX = 0;
+
+// dem Node modules
 var _ = require('underscore');
 var gpio = require('pi-gpio');
 
@@ -42,17 +53,28 @@ var MicroDogsController = function() {
     switch(deploy.status) {
       case "started":
         interval = setInterval(this.flash, 500); 
+        this.displayState(STARTED_INDEX);
         break;
       case "failed":
         interval = setInterval(this.flash, 200); 
+        this.displayState(FAILURE_INDEX);
         break;
       case "successful":
-
+        this.displayState(SUCCESS_INDEX);
         break;
       case "default":
         this.steadyLight(); 
         break; 
     }     
+  };
+
+  this.displayState = function(index) {
+    var rotations = Math.abs(index - CURRENT_INDEX); // how many rotations to the next image?
+    for (var i = 0; i < rotations; i++ ) {
+      gpio.write(NAV_PIN, 1, function() {
+        console.log('Rotate ' + i);
+      });
+    }
   };
 
   this.setUpScreens = function() {
