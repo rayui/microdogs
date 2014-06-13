@@ -55,8 +55,9 @@ var server = require('http').createServer(app);
 server.listen(PORT);
 
 microdogsController.setUpScreens();
-
-MicroDogsPoller.start(_.bind(microdogsController.announceDeploy, microdogsController));
+setTimeout(function() {
+  MicroDogsPoller.start(_.bind(microdogsController.announceDeploy, microdogsController));
+}, 2000);
 
 console.log('URL:');
 console.log('GET http://localhost:' + PORT);

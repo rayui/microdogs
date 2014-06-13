@@ -1,4 +1,4 @@
-var BUTTON_TIME = 100;
+var BUTTON_TIME = 150;
 var YLOGO_PIN = 12;
 var SPITTLE_PIN_0 = 11;
 var SPITTLE_PIN_1 = 16;
@@ -205,10 +205,10 @@ var MicroDogsController = function() {
         gpio.write(pinQueue[0], 1, function() {
           setTimeout(unclickButton, BUTTON_TIME); 
         });
-      }, BUTTON_TIME * 2);
+      }, BUTTON_TIME * 4);
     };
 
-    setTimeout(turnOffDefaults, 400);
+    setTimeout(_.bind(turnOffDefaults, this), 400);
   };
 
 };
