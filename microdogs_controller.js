@@ -51,6 +51,7 @@ var MicroDogsController = function() {
   var interval; 
   var spittleState = 0;
   var flashState = 1;
+  var status = "";
 
   var clearIntervals = function() {
     clearInterval(interval);
@@ -66,7 +67,11 @@ var MicroDogsController = function() {
     }
     return 0;
   }
-  
+ 
+  this.getStatus = function() {
+    return this.state;
+  };
+ 
   this.steadyLight = function() {
     gpio.write(YLOGO_PIN, 1, function() {
       console.log('Enable pin  ' + YLOGO_PIN + ' - constant');
@@ -121,7 +126,8 @@ var MicroDogsController = function() {
   this.announceDeploy = function (deploy) {
     var self = this;
     clearIntervals(); 
-    switch(deploy.status) {
+    status = deploy.status;
+    switch(status) {
       case "started":
         spittleState = 0;
         interval = setInterval(this.cycleSpittle, 500); 

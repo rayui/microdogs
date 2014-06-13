@@ -21,13 +21,9 @@ app.use(express.bodyParser());
 var PORT = process.argv[3] || 80;
 console.log('PORT', PORT);
 
-app.get('/dashboard', function (req, res) {
+app.get('/', function (req, res) {
 
-  var templateData = {
-    test: 'value'
-  };
-
-  app.render('dashboard.html.handlebars', templateData, function (err, html) {
+  app.render('microdogs.html.handlebars', {status:microdogsController.getStatus()}, function (err, html) {
     if (err) {
       console.log(err);
       res.send(500, { error: err });
@@ -61,4 +57,4 @@ server.listen(PORT);
 MicroDogsPoller.start(microdogsController.announceDeploy);
 
 console.log('URL:');
-console.log('GET http://localhost:' + PORT + '/dashboard');
+console.log('GET http://localhost:' + PORT);
