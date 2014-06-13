@@ -121,8 +121,8 @@ var MicroDogsController = function() {
     });
   };
 
-  this.failureFlash = function() {
-    flashState = toggleBit(flashState); 
+    this.failureFlash = function() {
+      flashState = toggleBit(flashState); 
     gpio.write(YLOGO_PIN, flashState, function() {
       console.log('pin ' + YLOGO_PIN + ' state - 1');
     });
@@ -149,6 +149,7 @@ var MicroDogsController = function() {
         setTimeout(_.bind(clickButton, self), BUTTON_TIME);
         rotations -= 1; 
       });       
+      CURRENT_INDEX = index;
     }
 
     clickButton(Math.abs(index - CURRENT_INDEX) * 2);
@@ -177,37 +178,37 @@ var MicroDogsController = function() {
     }     
   };
 
-
   this.setUpScreens = function() {
-    var pinQueue = [];
-    var unclickButton = function() {
-      gpio.write(pinQueue.shift(), 1, function() { 
-        console.log("unclicking menu");
-        if (pinQueue.length == 0) {
-          clearInterval(pinQueueWorker);
-        }
-      });
+    var turnOffDefaults = function() {
+      var pinQueue = [];
+      var unclickButton = function() {
+        gpio.write(pinQueue.shift(), 0, function() { 
+          if (pinQueue.length == 0) {
+            clearInterval(pinQueueWorker);
+          }
+        });
+      };
+      // Opens Menu
+      pinQueue.push(MENU_PIN);
+
+      /******* Disable Slideshow ********/
+      pinQueue = pinQueue.concat([NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);
+      
+      // Should return to menu after selecting an option
+      
+      /****** Disable Auto-shut down ********/
+      pinQueue = pinQueue.concat([NAV_PIN, NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);    
+
+      // Should return to menu after selecting an option
+      // and subsequently after a few seconds, to the first slide.
+      var pinQueueWorker = setInterval(function() {
+        gpio.write(pinQueue[0], 1, function() {
+          setTimeout(unclickButton, BUTTON_TIME); 
+        });
+      }, BUTTON_TIME * 2);
     };
-    // Opens Menu
-    pinQueue.push(MENU_PIN);
 
-    /******* Disable Slideshow ********/
-    pinQueue = pinQueue.concat([NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);
-    
-    // Should return to menu after selecting an option
-    
-    /****** Disable Auto-shut down ********/
-    pinQueue = pinQueue.concat([NAV_PIN, NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);    
-
-    // Should return to menu after selecting an option
-    // and subsequently after a few seconds, to the first slide.
-    var pinQueueWorker = setInterval(function() {
-      gpio.write(pinQueue[0], 0, function() {
-        console.log("clicking menu " + pinQueue[0]);
-        setTimeout(unclickButton, BUTTON_TIME); 
-      });
-    }, BUTTON_TIME * 2);
-
+    setTimeout(turnOffDefaults, 400);
   };
 
 };
