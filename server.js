@@ -7,6 +7,7 @@ var express = require('express');
 var path = require('path');
 var consolidate = require('consolidate');
 var app = express();
+var _ = require('underscore');
 
 var MicroDogsPoller = require('./microdogs_poller');
 var MicroDogsController = require('./microdogs_controller').MicroDogsController;
@@ -55,7 +56,7 @@ server.listen(PORT);
 
 microdogsController.setUpScreens();
 
-MicroDogsPoller.start(microdogsController.announceDeploy);
+MicroDogsPoller.start(_.bind(microdogsController.announceDeploy, microdogsController));
 
 console.log('URL:');
 console.log('GET http://localhost:' + PORT);

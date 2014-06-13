@@ -7,8 +7,10 @@ console.log('USER_TOKEN:', USER_TOKEN);
 
 var POLL_INTERVAL = 3010;
 var POLL_COUNT = 20;
-var THREAD_ID=1254605;
-var DEPLOY_BOT_USER_ID=1495663658;
+//var THREAD_ID=1254605;
+//var DEPLOY_BOT_USER_ID=1495663658;
+var THREAD_ID=4464973;
+var DEPLOY_BOT_USER_ID=1490295994;
 
 var getMessage = function(onPayload) {
   var options = {
@@ -38,18 +40,23 @@ var getMessage = function(onPayload) {
 
 // Keep track of likes so we never double count one.
 
+var getLatestMessage = function(messages) {
+  return _.max(messages, function(message) { 
+    return message.id;
+  });    
+}
+
 var isFromDeployBot = function(payload) {
-  var latestMessage = _.toArray(payload.threaded_extended)[0][0]; 
-  if (latestMessage.sender_id == 1495663658) {
+  var latestMessage = getLatestMessage(payload.messages);
+  if (latestMessage.sender_id == DEPLOY_BOT_USER_ID) {
     return true;
   }
   return false;
 }
 
 var hasSuccessReply = function(payload) {
-
-  var latestMessage = _.toArray(payload.threaded_extended)[0][0];
-  if (latestMessage.body.indexof("finished deploying workfeed_production") >= 0) {
+  var latestMessage = getLatestMessage(payload.messages);
+  if (latestMessage.body.plain.indexOf("finished deploying workfeed_production") >= 0) {
     return true; 
   }
  
@@ -57,17 +64,17 @@ var hasSuccessReply = function(payload) {
 } 
 
 var hasStartedMessage = function(payload) {
-  var latestMessage = _.toArray(payload.threaded_extended)[0][0];
-  if (latestMessage.body.indexof("started deploying workfeed_production") >= 0) {
+  var latestMessage = getLatestMessage(payload.messages);
+  if (latestMessage.body.plain.indexOf("started deploying workfeed_production") >= 0) {
     return true;
   }
   
   return false;
 } 
 
-var hasFailedMessage = function(payload) {
-  var latestMessage = payload.threaded_Extended.toArray()[0][0];
-  if (latestMessage.body.indexof("failed deploying workfeed_production") >= 0) {
+var hasFailedReply = function(payload) {
+  var latestMessage = getLatestMessage(payload.messages);
+  if (latestMessage.body.plain.indexOf("failed deploying workfeed_production") >= 0) {
     return true;
   }
  
@@ -81,20 +88,23 @@ var processThread = function (onNewDeploy) {
 
     try {
       payload = JSON.parse(payload);
+    
     } catch (err) {
       console.log("err: %s payload length: %d,  payload: %s", err, payload.length, payload);
-      payload = {};
+      return;
     }
 
-    if (isFromDeployBot(payload)) {
-      if (hasStartedMessage(payload)) {
-        onNewDeploy({status:"started"});  
-      } else if (hasSuccessReply(payload)) {
-        onNewDeploy({status:"successful"});
-      } else if (hasFailedReply()) {
-        onNewDeploy({status:"failed"});
+      if (isFromDeployBot(payload)) {
+        if (hasSuccessReply(payload)) {
+          onNewDeploy({status:"successful"});
+        } else if (hasFailedReply(payload)) {
+          onNewDeploy({status:"failed"});
+        } else if (hasStartedMessage(payload)) {
+          onNewDeploy({status:"started"});  
+        } else {
+          onNewDeploy({status:"successful"});
+        } 
       } 
-    } 
 
   });
 };

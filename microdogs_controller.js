@@ -123,8 +123,27 @@ var MicroDogsController = function() {
     });
   };
   
+  this.displayState = function(index) {
+    var buttonState = 0;
+    var self = this;
+ 
+    var clickButton = function(rotations) {
+      if (!rotations) return;
+      
+      buttonState = toggleBit(buttonState);
+      gpio.write(NAV_PIN, buttonState, function() {
+        setTimeout(_.bind(clickButton, self), BUTTON_TIME);
+        rotations -= 1; 
+      });       
+    }
+
+    clickButton(Math.abs(index - CURRENT_INDEX) * 2);
+
+  };
+  
   this.announceDeploy = function (deploy) {
     var self = this;
+
     clearIntervals(); 
     status = deploy.status;
     switch(status) {
@@ -144,22 +163,6 @@ var MicroDogsController = function() {
     }     
   };
 
-  this.displayState = function(index) {
-    var buttonState = 0;
-    
-    var clickButton = function(rotations) {
-      if (!rotations) return;
-      
-      buttonState = toggleBit(buttonState);
-      gpio.write(NAV_PIN, buttonState, function() {
-        setTimeout(clickButton, BUTTON_TIME);
-        rotations -= 1; 
-      });       
-    }
-
-    clickButton(Math.abs(index - CURRENT_INDEX) * 2);
-
-  };
 
   this.setUpScreens = function() {
     var pinQueue = [];
