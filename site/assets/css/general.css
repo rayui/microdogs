@@ -1,0 +1,206 @@
+@font-face {
+  font-family: "Shock";
+  src: url('../fonts/shocktherapybb_reg.otf');
+  src: local("☺"),
+    url('../fonts/shocktherapybb_reg.otf') format("opentype")
+  }
+
+body {
+  padding-top: 25px;
+  color: #999;
+}
+h2 {
+  font-size: 40px;
+}
+h4 {
+  font-size: 34px;
+}
+.shocker h2 {
+  font-size: 48px;
+}
+.shocker h4{
+  font-size: 45px;
+}
+ul {
+  padding: 0;
+}
+ul li,
+ol li {
+  list-style-type: none;
+}
+
+.container { 
+  margin: 0 auto 10px;
+  width: 80%;
+}
+h3 { 
+  text-align: center; 
+  width: 70%;
+  margin-left: 10%;
+}
+#fun-container {
+  float: left;
+  width: 100%;
+}
+#fun-left,
+#fun-right,
+#headshot {
+  /*border: 1px solid red;*/
+  float: right;
+}
+#fun-left,
+#fun-right {
+  min-height: 150px;
+}
+#fun-left {
+  text-align: right;
+  width: 286px;
+}
+.starter #fun-left {
+  width: 256px;
+}
+#fun-right {
+  text-align: left;
+  width: 200px;
+}
+#headshot {
+  width: 200px;
+  text-align: center;
+}
+.starter #headshot {
+  width: 500px;
+}
+#shock-list-info {
+  width: 80%;
+  float: left;
+  line-height: 1.2;
+  /*background: url('../img/tesla.gif');*/
+}
+.starter #shock-list-info {
+  width: 100%;
+  margin: 0 auto;
+}
+#shock-list-info meter {
+  width: 100%;
+  /*margin: 3px 0 0 10px;*/
+  float: left
+}
+#shock-list-info label {
+  float: left
+}
+#shock-list-container {
+  overflow: scroll;
+  height: 100px;
+  float: left;
+  width: 100%;
+  border: 1px solid #ccc;
+  margin-top: 6px;
+}
+#shocker-list {
+  padding: 6px;
+}
+#shocker-list li {
+  border-bottom: 1px solid #ccc;
+  padding: 3px 0;
+}
+#number-shocks {
+  font-weight: bold;
+  font-size: 96px;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+}
+#actual-number-shocks {
+  color: #000;
+}
+#shocker-leaderboard {
+  width: 20%;
+  float: left;
+  height: 610px;
+}
+.starter #shocker-leaderboard {
+  display: none;
+}
+#shocker-leaderboard h4 {
+  margin: 8px 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ccc;
+}
+#leaderboard-list {
+  padding: 0 8px 8px;
+}
+#leaderboard-list li {
+  border-bottom: 1px solid #eee;
+}
+#leaderboard-list .num-likes {
+  float: right;
+}
+#footer {
+  float: left;
+  width: 100%;
+  height: 100px;
+  border-radius-bottom: 3px;
+  background: url('../imgs/fence-small.jpg') repeat-x;
+}
+.fun-shock {
+  display: none;
+  width: 200px;
+  min-height: 200px;
+}
+.shocker .fun-shock {
+  display: inline-block;
+}
+.shocker .fun-normal {
+  display: none;
+}
+/* shocker styles */
+.shocker,
+.shocker h2,
+.shocker h3,
+.shocker h4 {
+  font-family: "Shock", Georgia, serif;
+}
+body.shocker {
+  background: #000;
+  color: #fff;
+}
+.shocker h2,
+.shocker h4,
+.shocker #shock-list-info label  {
+  color: #aea8d0;
+}
+.shocker h2 {
+  font-size: 48px;
+}
+.shocker h4 {
+  font-size: 40px;
+}
+..shocker #shock-list-info label {
+  font-size: 30px;
+}
+.shocker #shock-list-container {
+  border: 1px solid #333;
+}
+.shocker .jumbotron {
+  background-color: #000 !important;
+  border: 1px solid #333;
+}
+.shocker #shocker-list li {
+  border-bottom: 1px solid #333;
+}
+.shocker #shocker-leaderboard h4 {
+  border-bottom: 1px solid #333;
+}
+.shocker #leaderboard-list li {
+  border-bottom: 1px solid #111;
+  color: #ffff00;
+  font-size: 21px;
+}
+.shocker #actual-number-shocks {
+  color: #ffff00;
+}
+.shocker #shocker-list li {
+  color: #ffff00;
+}
+
+
