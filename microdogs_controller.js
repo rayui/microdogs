@@ -156,47 +156,28 @@ var MicroDogsController = function() {
   };
 
   this.setUpScreens = function() {
+    var pinQueue = [];
     // Opens Menu
-    gpio.write(MENU_PIN, 1, function() {
-      console.log('Open menu.');
-    });
+    pinQueue.push(MENU_PIN);
 
     /******* Disable Slideshow ********/
+    pinQueue.concat([NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);
     
-    gpio.write(NAV_PIN, 1, function() {
-      console.log('Navigate to "Slideshow" menu item.');
-    });    
-    gpio.write(MENU_PIN, 1, function() {
-      console.log('Select "Slideshow" menu item.');
-    });
-    gpio.write(NAV_PIN, 1, function() {
-      console.log('Move to "Off" option.');
-    });
-    gpio.write(MENU_PIN, 1, function() {
-      console.log('Select "Off" option.');
-    });
-
     // Should return to menu after selecting an option
     
     /****** Disable Auto-shut down ********/
-    gpio.write(NAV_PIN, 1, function() {
-      console.log('Navigate next.');
-    });
-    gpio.write(NAV_PIN, 1, function() {
-      console.log('Navigate to "Auto" menu item.');
-    });    
-    gpio.write(MENU_PIN, 1, function() {
-      console.log('Select "Auto" menu item.');
-    });  
-    gpio.write(NAV_PIN, 1, function() {
-      console.log('Move to "Off" option.');
-    }); 
-    gpio.write(MENU_PIN, 1, function() {
-      console.log('Select "Off" option.');
-    });   
+    pinQueue.concat([NAV_PIN, NAV_PIN, MENU_PIN, NAV_PIN, MENU_PIN]);    
 
     // Should return to menu after selecting an option
     // and subsequently after a few seconds, to the first slide.
+    var pinQueueWorker = setInterval(function() {
+      gpio.write(pinQueue.shift(), 1, function() {
+        if (pinQueue.length == 0) {
+          clearInterval(pinQueueWorker);
+        }
+      });
+    }, BUTTON_TIME);
+
   };
 
 };
