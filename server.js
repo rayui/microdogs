@@ -12,7 +12,6 @@ var MicroDogsPoller = require('./microdogs_poller');
 var MicroDogsController = require('./microdogs_controller').MicroDogsController;
 var microdogsController = new MicroDogsController();
 
-
 app.engine('handlebars', consolidate.handlebars);
 app.set('views', __dirname + '/site');
 app.use(express.bodyParser());
@@ -53,6 +52,8 @@ serveDir('/assets/imgs/');
 var server = require('http').createServer(app);
 
 server.listen(PORT);
+
+microdogsController.setUpScreens();
 
 MicroDogsPoller.start(microdogsController.announceDeploy);
 
