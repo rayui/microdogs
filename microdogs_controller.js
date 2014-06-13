@@ -1,4 +1,3 @@
-
 var BUTTON_TIME = 750;
 var _ = require('underscore');
 var gpio = require('pi-gpio');
@@ -16,19 +15,22 @@ openGpio();
 var MicroDogsController = function(socket) {
   var interval; 
   var lightState;
+
   this.socket = socket;
+  this.yLogoLEDState = 1;
 
   this.steadyLight = function() {
-    yLogoLEDState = 1;
-    gpio.write(12, yLogoLEDState, function() {
+    this.yLogoLEDState = 1;
+    gpio.write(12, this.yLogoLEDState, function() {
       console.log('Enable pin 12 - constant');
     });
   };
 
   this.flash = function() {
-    yLogoLEDState = !yLogoLEDState;
-    gpio.write(12, yLogoLEDState, function() {
-      console.log('pin 12 state - ' + yLogoLEDState);
+    var self = this;
+    this.yLogoLEDState = !this.yLogoLEDState;
+    gpio.write(12, this.yLogoLEDState, function() {
+      console.log('pin 12 state - ' + self.yLogoLEDState);
     });
   };
 
@@ -36,7 +38,7 @@ var MicroDogsController = function(socket) {
     var self = this;
     clearInterval(interval); 
     switch(deploy.status) {
-      case: "started":
+      case "started":
         interval = setInterval(this.flash, 500); 
         break;
       case "failed":

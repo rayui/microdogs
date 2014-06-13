@@ -45,10 +45,11 @@ app.post('/toggleStart', function (req, res) {
 
 // Testing endpoint
 app.post('/deploy', function (req, res) {
-  
+
   if (socket) {
+    console.log(req.body);
     socket.onDeploy({
-      status:"started"
+      status:req.body.status
     });
   }
   
@@ -56,28 +57,6 @@ app.post('/deploy', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.end();
 });
-
-app.post('/shock/on', function (req, res) {
-  socket.emit('shocker', {
-    on: true
-  });
-  
-  // Just returns 200
-  res.setHeader('Content-Type', 'application/json');
-  res.end();
-});
-
-app.post('/shock/off', function (req, res) {
-  socket.emit('shocker', {
-    on: false
-  });
-  
-  // Just returns 200
-  res.setHeader('Content-Type', 'application/json');
-  res.end();
-});
-
-
 
 function serveDir (dir) {
   app.get(dir + ':file', function (req, res) {
